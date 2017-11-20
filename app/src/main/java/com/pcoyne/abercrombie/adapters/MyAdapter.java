@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.pcoyne.abercrombie.ExampleModel;
 import com.pcoyne.abercrombie.R;
-import com.pcoyne.abercrombie.WebActivity;
 import com.pcoyne.abercrombie.WebViewActivity;
 import com.squareup.picasso.Picasso;
 
@@ -89,7 +88,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
         if(model.getPromoMessage() != null){
             holder.promoMessage.setVisibility(View.VISIBLE);
-            holder.promoMessage.setText(model.getTopDescription());
+            holder.promoMessage.setText(model.getPromoMessage());
         }else{
             holder.promoMessage.setVisibility(View.GONE);
         }
