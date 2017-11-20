@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Exa
 
         Retrofit retrofit=
                 new Retrofit.Builder()
-//        .baseUrl("https://www.abercrombie.com") // Am getting acess denied errors put file on s3 bucket
+//        .baseUrl("https://www.abercrombie.com") // I was getting acess denied errors put file on s3 bucket
                         .baseUrl("https://s3-us-west-2.amazonaws.com")
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
@@ -62,6 +62,6 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Exa
 
     @Override
     public void onFailure(Call<List<ExampleModel>> call, Throwable t) {
-        Log.d("TAg", t.toString());
+        Log.d(TAG, t.toString());
     }
 }

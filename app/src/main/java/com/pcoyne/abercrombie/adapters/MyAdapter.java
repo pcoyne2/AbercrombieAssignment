@@ -1,7 +1,11 @@
 package com.pcoyne.abercrombie.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +15,13 @@ import android.widget.TextView;
 
 import com.pcoyne.abercrombie.ExampleModel;
 import com.pcoyne.abercrombie.R;
+import com.pcoyne.abercrombie.WebActivity;
+import com.pcoyne.abercrombie.WebViewActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import static com.pcoyne.abercrombie.WebViewActivity.URL_EXTRA;
 
 /**
  * Created by Patrick Coyne on 11/19/2017.
@@ -42,8 +50,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        ExampleModel model = items.get(position);
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        final ExampleModel model = items.get(position);
         if(model.getBackgroundImage() != null){
             holder.backgroundImage.setVisibility(View.VISIBLE);
             Picasso.with(context).load(model.getBackgroundImage())
@@ -60,7 +68,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
         if(model.getBottomDescription() != null){
             holder.bottomDescription.setVisibility(View.VISIBLE);
-            holder.bottomDescription.setText(model.getTopDescription());
+            holder.bottomDescription.setText(Html.fromHtml(model.getBottomDescription()));
+            holder.bottomDescription.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String description = items.get(position).getBottomDescription();
+                    if(description.contains("a href")){
+                        Intent i = new Intent(context, WebViewActivity.class);
+                        int startIndex = description.indexOf("http");
+                        int endIndex = description.indexOf(".html")+5;
+                        String url = description.substring(startIndex, endIndex);
+//                        Intent i = new Intent(Intent.ACTION_VIEW, uri);
+                        i.putExtra(URL_EXTRA, url);
+                        context.getApplicationContext().startActivity(i);
+                    }
+                }
+            });
         }else{
             holder.bottomDescription.setVisibility(View.GONE);
         }
@@ -73,9 +96,28 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         if(model.getContent() != null) {
             holder.content_title.setVisibility(View.VISIBLE);
             holder.content_title.setText(model.getContent().get(0).getTitle());
+            holder.content_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("TAG", items.get(position).getContent().get(0).getTarget());
+                    Intent i = new Intent(context, WebViewActivity.class);
+                    i.putExtra(URL_EXTRA, items.get(position).getContent().get(0).getTarget());
+                    context.getApplicationContext().startActivity(i);
+                }
+            });
             if (model.getContent().size() >= 2) {
                 holder.second_content_title.setVisibility(View.VISIBLE);
                 holder.second_content_title.setText(model.getContent().get(1).getTitle());
+                holder.second_content_title.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d("TAG", items.get(position).getContent().get(1).getTarget());
+                        Intent i = new Intent(context, WebViewActivity.class);
+                        i.putExtra(URL_EXTRA, items.get(position).getContent().get(1).getTarget());
+                        context.getApplicationContext().startActivity(i);
+                    }
+                });
+
             } else {
                 holder.second_content_title.setVisibility(View.GONE);
             }
@@ -92,7 +134,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return items.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         // each data item is just a string in this case
         public View view;
         public ImageView backgroundImage;
@@ -105,6 +147,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public ViewHolder(View v) {
             super(v);
             view = v;
+            view.setOnClickListener(this);
             backgroundImage = (ImageView)view.findViewById(R.id.background_image);
             topDescription = (TextView)view.findViewById(R.id.topDescription);
             title = (TextView)view.findViewById(R.id.title);
@@ -112,6 +155,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             bottomDescription = (TextView)view.findViewById(R.id.bottomDescription);
             content_title = (Button)view.findViewById(R.id.first_content);
             second_content_title = (Button)view.findViewById(R.id.second_content);
+        }
+
+        @Override
+        public void onClick(View view) {
+
         }
     }
 
